@@ -3,11 +3,12 @@ services:
     image: ghcr.io/kozalosev/naive-proxy-caddy
     container_name: caddy-naive
     restart: unless-stopped
+    env_file:
+      - ./config.env
     ports:
       - "80:80"
       - "443:443"
     volumes:
-      - ./secrets.env:/etc/caddy/secrets.enc.env:ro
       - ./auth_users:/etc/caddy/auth_users.enc:ro
       - ~/.config/sops/age/keys.txt:/config/sops/age/keys.txt:ro
       - caddy_data:/data

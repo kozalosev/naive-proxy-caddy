@@ -2,7 +2,7 @@
 
 Caddy + [klzgrad/naiveproxy](https://github.com/klzgrad/naiveproxy) forwardproxy.
 Proxy user list and secrets are kept outside the image and mounted at runtime.
-Secrets are encrypted at rest with [SOPS](https://github.com/getsops/sops) + Age.
+Proxy credentials (`auth_users`) are encrypted at rest with [SOPS](https://github.com/getsops/sops) + Age.
 
 ## Prerequisites
 
@@ -20,19 +20,18 @@ age-keygen -o ~/.config/sops/age/keys.txt
 Copy the example deployment files from `docs/` to your working directory:
 
 ```sh
-cp docs/docker-compose.yml docs/secrets.env docs/auth_users .
+cp docs/docker-compose.yml docs/config.env docs/auth_users .
 ```
 
-Fill in `secrets.env`, edit `auth_users` — one `basic_auth` line per proxy user.
+Fill in `config.env`. Edit `auth_users` — one `basic_auth` line per proxy user:
 
 ```
 basic_auth "username" "password"
 ```
 
-Then **e**ncrypt them **i**n place:
+Then **e**ncrypt `auth_users` **i**n place:
 
 ```sh
-sops -ei secrets.env
 sops -ei auth_users
 ```
 
