@@ -20,19 +20,13 @@ age-keygen -o ~/.config/sops/age/keys.txt
 Copy the example deployment files from `docs/` to your working directory:
 
 ```sh
-cp docs/docker-compose.yml docs/config.env docs/auth_users docs/.sops.yaml .
+cp docs/docker-compose.yml docs/config.env docs/auth_users .
 ```
 
-Fill in `config.env`. Put your age public key (printed by `age-keygen`) into `.sops.yaml`, replacing the placeholder. Edit `auth_users` — one `basic_auth` line per proxy user:
+Fill in `config.env`. Edit `auth_users` — one `basic_auth` line per proxy user:
 
 ```
 basic_auth "username" "password"
-```
-
-Encrypt `auth_users`:
-
-```sh
-sops encrypt --in-place auth_users
 ```
 
 Start the container:
@@ -40,3 +34,5 @@ Start the container:
 ```sh
 docker compose up -d
 ```
+
+`auth_users` will be encrypted automatically on the first run.

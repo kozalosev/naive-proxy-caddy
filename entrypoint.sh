@@ -3,8 +3,25 @@
 # Fail fast on the first error
 set -e
 
-# Decrypt the files into tmpfs
-sops -d /etc/caddy/auth_users.enc > /run/secrets/auth_users
+AUTH_ENC=/etc/caddy/auth_users.enc
+
+# Encrypt on first run if the file is plaintext
+if ! sops filestatus "$AUTH_ENC" 2>/dev/null | grep -q '"encrypted":true'; then
+    if [ -f /config/sops/age/keys.txt ]; then
+        AGE_PUB=$(age-keygen -y /config/sops/age/keys.txt)
+    elif [ -n "$SOPS_AGE_KEY" ]; then
+        AGE_PUB=$(printf '%s' "$SOPS_AGE_KEY" | age-keygen -y)
+    else
+        echo "ERROR: auth_users is not encrypted and no Age key is available." >&2
+        exit 1
+    fi
+    echo "Encrypting auth_users on first run..."
+    sops -e --input-type binary --age "$AGE_PUB" "$AUTH_ENC" > "${AUTH_ENC}.new"
+    mv "${AUTH_ENC}.new" "$AUTH_ENC"
+fi
+
+# Decrypt the file into tmpfs
+sops -d "$AUTH_ENC" > /run/secrets/auth_users
 
 # Run Caddy
 exec "$@"
