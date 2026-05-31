@@ -18,7 +18,8 @@ jobs:
 
       - name: Install sops
         run: |
-          sudo curl -Lo /usr/local/bin/sops https://github.com/getsops/sops/releases/download/v3.8.1/sops-v3.8.1.linux.amd64
+          SOPS_VERSION=$(curl -s https://api.github.com/repos/getsops/sops/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
+          sudo curl -Lo /usr/local/bin/sops "https://github.com/getsops/sops/releases/download/${SOPS_VERSION}/sops-${SOPS_VERSION}.linux.amd64"
           sudo chmod +x /usr/local/bin/sops
 
       - name: Prepare encrypted test auth_users

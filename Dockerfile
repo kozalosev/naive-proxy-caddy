@@ -7,8 +7,8 @@ RUN xcaddy build \
 FROM caddy:alpine
 
 RUN apk add --no-cache curl age \
-    && curl -LO https://github.com/getsops/sops/releases/download/v3.8.1/sops-v3.8.1.linux.amd64 \
-    && mv sops-v3.8.1.linux.amd64 /usr/local/bin/sops \
+    && SOPS_VERSION=$(curl -s https://api.github.com/repos/getsops/sops/releases/latest | grep '"tag_name"' | cut -d'"' -f4) \
+    && curl -Lo /usr/local/bin/sops "https://github.com/getsops/sops/releases/download/${SOPS_VERSION}/sops-${SOPS_VERSION}.linux.amd64" \
     && chmod +x /usr/local/bin/sops
 
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
