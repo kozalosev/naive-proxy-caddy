@@ -11,4 +11,31 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build the Docker image
-        run: docker build .
+        run: docker build -t naive-proxy-test .
+
+      - name: Install age
+        run: sudo apt-get install -y age
+
+      - name: Install sops
+        run: |
+          SOPS_VERSION=$(curl -s https://api.github.com/repos/getsops/sops/releases/latest | grep '"tag_name"' | cut -d'"' -f4)
+          sudo curl -Lo /usr/local/bin/sops "https://github.com/getsops/sops/releases/download/${SOPS_VERSION}/sops-${SOPS_VERSION}.linux.amd64"
+          sudo chmod +x /usr/local/bin/sops
+
+      - name: Prepare encrypted test auth_users
+        run: |
+          age-keygen -o /tmp/age-key.txt
+          PUBLIC_KEY=$(grep "^# public key:" /tmp/age-key.txt | awk '{print $NF}')
+          SECRET_KEY=$(grep "^AGE-SECRET-KEY-" /tmp/age-key.txt)
+          echo 'basic_auth "testuser" "testpass"' > /tmp/auth_users
+          sops -e --input-type binary --age "$PUBLIC_KEY" /tmp/auth_users > /tmp/auth_users.enc
+          echo "SOPS_AGE_KEY=$SECRET_KEY" >> $GITHUB_ENV
+
+      - name: Smoke-test container startup
+        run: |
+          docker run --rm \
+            -e SOPS_AGE_KEY \
+            -v /tmp/auth_users.enc:/etc/caddy/auth_users.enc:ro \
+            --tmpfs /run/secrets \
+            naive-proxy-test \
+            echo OK
