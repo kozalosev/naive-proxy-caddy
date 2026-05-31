@@ -29,10 +29,10 @@ Fill in `config.env`. Put your age public key (printed by `age-keygen`) into `.s
 basic_auth "username" "password"
 ```
 
-Then **e**ncrypt `auth_users` **i**n place:
+Encrypt `auth_users`:
 
 ```sh
-sops -ei auth_users
+sops encrypt --in-place auth_users
 ```
 
 Start the container:
