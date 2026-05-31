@@ -16,8 +16,7 @@ if ! sops filestatus "$AUTH_ENC" 2>/dev/null | grep -q '"encrypted":true'; then
         exit 1
     fi
     echo "Encrypting auth_users on first run..."
-    sops -e --input-type binary --age "$AGE_PUB" "$AUTH_ENC" > "${AUTH_ENC}.new"
-    mv "${AUTH_ENC}.new" "$AUTH_ENC"
+    sops -e --input-type binary --age "$AGE_PUB" --in-place "$AUTH_ENC"
 fi
 
 # Decrypt the file into tmpfs
