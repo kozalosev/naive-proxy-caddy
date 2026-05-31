@@ -20,10 +20,10 @@ age-keygen -o ~/.config/sops/age/keys.txt
 Copy the example deployment files from `docs/` to your working directory:
 
 ```sh
-cp docs/docker-compose.yml docs/config.env docs/auth_users .
+cp docs/docker-compose.yml docs/config.env docs/auth_users docs/.sops.yaml .
 ```
 
-Fill in `config.env`. Edit `auth_users` — one `basic_auth` line per proxy user:
+Fill in `config.env`. Put your age public key (printed by `age-keygen`) into `.sops.yaml`, replacing the placeholder. Edit `auth_users` — one `basic_auth` line per proxy user:
 
 ```
 basic_auth "username" "password"

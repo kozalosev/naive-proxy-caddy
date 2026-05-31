@@ -1,0 +1,5 @@
+creation_rules:
+  - path_regex: 'auth_users'
+    key_groups:
+      - age:
+          - XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
