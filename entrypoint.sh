@@ -22,5 +22,13 @@ fi
 # Decrypt the file into tmpfs
 sops -d "$AUTH_ENC" > /run/secrets/auth_users
 
+# Write upstream proxy config (empty if UPSTREAM_PROXY is not set)
+mkdir -p /run/caddy
+if [ -n "$UPSTREAM_PROXY" ]; then
+    printf 'upstream %s\n' "$UPSTREAM_PROXY" > /run/caddy/upstream_config
+else
+    : > /run/caddy/upstream_config
+fi
+
 # Run Caddy
 exec "$@"

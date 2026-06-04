@@ -36,3 +36,23 @@ docker compose up -d
 ```
 
 `auth_users` will be encrypted automatically on the first run.
+
+## Upstream proxy chaining (optional)
+
+To route outbound traffic through another proxy (e.g., xray or sing-box), set `UPSTREAM_PROXY` in `config.env`:
+
+```env
+# HTTPS / NaiveProxy upstream
+UPSTREAM_PROXY=https://user:pass@upstream.example.com:443
+# or SOCKS5
+UPSTREAM_PROXY=socks5://127.0.0.1:1080
+```
+
+If the upstream proxy runs directly on the Docker host, use the host-network compose file:
+
+```sh
+cp docs/docker-compose.proxy-on-host.yml ./docker-compose.yml
+docker compose up -d
+```
+
+This uses `network_mode: host`, giving the container direct access to host-local services via `127.0.0.1`.

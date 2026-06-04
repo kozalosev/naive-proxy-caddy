@@ -10,6 +10,7 @@
 
     forward_proxy {
         import /run/secrets/auth_users
+        import /run/caddy/upstream_config
         hide_ip
         hide_via
         probe_resistance
